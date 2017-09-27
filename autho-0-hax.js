@@ -6,44 +6,43 @@ var AWS = require('aws-sdk/global');
 var S3 = require('aws-sdk/clients/s3');
 
 module.exports = function(context, cb) {
-        cb(null, {
-            greeting: context.data.name || 'Here is a list of AWS prices in the east region'
-        });
+    cb(null, {
+      // This is from webtask to greet so this proves to start working
+        greeting: context.data.name || 'Here is a list of AWS prices in the east region...'
+    });
 
-        var request = require('request');
+    // Setting up the request
+    var request = require('request');
 
-        for (var aws_price in aws_prices) {
-            var all_prices = price_by_region[region];
+    var awsPrices = request.requestPricing();
+    // Event handler for when the prices are received
+    awsPrices.on('prices:received', function(retrievedAwsPrices) {
+    });
 
-            // call S3 to retrieve CORS configuration for selected bucket
-            s3.getBucketCors(bucketParams, function(err, data) {
-                if (err) {
-                    console.log(err);
-                } else if (data) {
-                    console.log(JSON.stringify(data));
-                }
-            });
+    //count out the price
+    awsPrices.on('end', function() {
+        console.log('___End of price list___');
+    });
 
-            // request({
-            //         method: 'GET',
-            //         url: 'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/index.json',
-            //         headers: {
-            //             region: '',
-            //             price: ''
-            //         },
-            //         data: all_prices
-                }, function(error, res, body) {
-                    // process error
-                    if (error) {
-                        cb(error, null);
-                        return; //return to stop the function from doing anything else
-                    }
-                },
+    var allPrices = [];
 
-            }
+    var priceList = request.requestPricing();
+    priceList.on('prices:received', function(retrievedAwsPrices) {
+      // Making a list to keep all the prices
+        allPrices.push(awsInfoList);
+    });
 
-            cb(null, {
-                aws_price: context.data.price,
-                region: context.data.region
-            });
-        };
+    // Print up the list of the prices
+    priceList.on('end', function() {
+        console.log(JSON.stringify(allPrices, null, 2));
+    });
+
+    
+
+    // process error
+    if (error) {
+        cb(error, null);
+        // Return to stop the function from going any further
+        return;
+    }
+};
