@@ -16,8 +16,14 @@ module.exports = function(context, cb) {
       data: all_prices
     }, function (error, res, body) {
       // process error
+      if(err){
+        cb(err, null);
+        return ;//return to stop the function from doing anything else
+  }
+  cb(null, {'badEndpoint': 'Uh oh, something goofed'};
     });
   }
   
   cb(null, {aws_price: context.data.price, region: context.data.region});
 };
+
